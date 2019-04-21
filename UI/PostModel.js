@@ -39,7 +39,7 @@ class PostModel {
         return notValid;
       }
 
-    get(skip = 0, count = 10, filterConfig = this._defaultFilterConfig) {
+    getPage(skip = 0, count = 10, filterConfig = this._defaultFilterConfig) {
       if(filterConfig !== this._defaultFilterConfigObject)
       {
           if(!filterConfig.hasOwnProperty("dateFrom"))
@@ -73,7 +73,7 @@ class PostModel {
       return result;
     }
   
-    getPhotoPost(id) {
+    get(id) {
     let result;
     for(let i=0; i<this._photoPosts.length;i++)
     {
@@ -147,7 +147,7 @@ class PostModel {
     }
   
     edit(id, edits) {
-        var post = this.getPhotoPost(id);
+        var post = this.get(id);
         var tmpPost = Object.assign({}, post);
         for (var field in edits) {
             if (field !== "id" && field !== "author" && field !== "createdAt") {
@@ -384,20 +384,20 @@ var post = {
 
 function test() {
     const Class_posts = new PostModel(posts);
-    Class_posts.getPhotoPost("5");
-    Class_posts.getPhotoPost("21"); 
+    Class_posts.get("5");
+    Class_posts.get("21"); 
     Class_posts._validate(post);
     Class_posts.add(post);
     Class_posts.remove("21");
-    Class_posts.getPhotoPost("1");
+    Class_posts.get("1");
 
     Class_posts.edit("1", {description: "changed"});
-    Class_posts.getPhotoPost("1");
+    Class_posts.get("1");
 
-    Class_posts.get(0,20);
-    Class_posts.get(5,5);
-    Class_posts.get(0,10, {authorName: "Пётр Порошенко"});
-    Class_posts.get(0,10, {hashtags: ["nature"]});
+    Class_posts.getPage(0,20);
+    Class_posts.getPage(5,5);
+    Class_posts.getPage(0,10, {authorName: "Пётр Порошенко"});
+    Class_posts.getPage(0,10, {hashtags: ["nature"]});
 
     Class_posts.addAll(two_posts);
 }
