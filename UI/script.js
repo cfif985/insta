@@ -297,7 +297,7 @@ var storage = (function () {
         var index = -1;
         for(let i = 0; i < photoPosts.length; i++)
         {
-            item = photoPosts[i];
+            var item = photoPosts[i];
             if (item.id === id) {
                 index = i;
             }
