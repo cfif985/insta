@@ -1,12 +1,14 @@
 class PostModel {
     constructor(posts) {
-      this._defaultFilterConfig = {
-        dateFrom: new Date(-8640000000000000),
-        dateTo: new Date(8640000000000000),
-        authorName: '',
-        hashtags: [],
-      };
-      this._photoPosts = posts;
+        this.restoreFromLocalStorage();
+        if (this._photoPosts == null) {
+            this._photoPosts = posts;
+            this._savePosts();
+        }
+        if (this._authStatus == null) {
+            this._authStatus = false;
+            this._saveAuthStatus();
+        }
     }
   
     _isUnique(post) {
@@ -29,6 +31,24 @@ class PostModel {
       return false;
     }
 
+    postsCount(config = PostModel._DEFAULT_FILTER_CONFIG) {
+        return this.getPosts(0, this._photoPosts.length, config).length;
+    }
+
+    toggleLike(id, username) {
+        this._photoPosts.forEach((post) => {
+            if (post.id === id) {
+                const index = post.likes.indexOf(username);
+                if (index !== -1) {
+                    post.likes.splice(index, 1);
+                } else {
+                    post.likes.push(username);
+                }
+                this._savePosts();
+            }
+        });
+    }
+
     addAll(posts) {
         const notValid = [];
         posts.forEach((post) => {
@@ -39,7 +59,7 @@ class PostModel {
         return notValid;
       }
 
-    getPage(skip = 0, count = 10, filterConfig = this._defaultFilterConfig) {
+    getPosts(skip = 0, count = 10, filterConfig = PostModel._DEFAULT_FILTER_CONFIG) {
       if(filterConfig !== this._defaultFilterConfigObject)
       {
           if(!filterConfig.hasOwnProperty("dateFrom"))
@@ -53,12 +73,13 @@ class PostModel {
 
       }
       var filtered_posts = this._photoPosts.filter(post =>
-          post.createdAt.getTime() >= filterConfig.dateFrom.getTime() &&
-          post.createdAt.getTime() <= filterConfig.dateTo.getTime() &&
+          new Date(post.createdAt).getTime() >= new Date(filterConfig.dateFrom).getTime() &&
+          new Date(post.createdAt).getTime() <= new Date(filterConfig.dateTo).getTime() &&
           (post.author === filterConfig.authorName || filterConfig.authorName === "") &&
-          (this._isСoincidence(post.hashtags, filterConfig.hashtags) || filterConfig.hashtags.length === 0)
+          (this._isСoincidence(post.hashtags, filterConfig.hashtags) || filterConfig.hashtags.length === 0
+              || (filterConfig.hashtags.length === 1 && filterConfig.hashtags[0] === ""))
           ).sort(function (a, b) {
-          return b.createdAt.getTime()- a.createdAt.getTime();
+          return new Date(b.createdAt).getTime()- new Date(a.createdAt).getTime();
       });
 
       let k = 0;
@@ -68,8 +89,7 @@ class PostModel {
           k++;
       }
 
-      console.log("Result function get:");
-        console.log(result);
+
       return result;
     }
   
@@ -80,32 +100,26 @@ class PostModel {
         let item = this._photoPosts[i];
         if(item.id === id)
         {
-            console.log("Post with id " + id + " is exist:");
-            console.log(item);
             result = item;
+            break;
         }
     }
-
-    if(result === undefined)
-    console.log("Post with id " + id + " doesn\'t exist.");
      return result;
     }
   
     _validate(post) {
-        if (!post.hasOwnProperty("id") || typeof post.id != "string" || !this._isUnique(post) ||
-        !post.hasOwnProperty("description") || post.description.length >= 150 || typeof post.description != "string" ||
-        !post.hasOwnProperty("createdAt") || typeof post.createdAt != "object" ||
-        !post.hasOwnProperty("author") || post.author.length >= 100 || typeof post.author != "string" || post.author === "" ||
-        !post.hasOwnProperty("photoLink") || typeof post.photoLink != "string" || post.photoLink === "" ||
+        if (!post.hasOwnProperty("id") || typeof post.id !== "string" || !this._isUnique(post) ||
+        !post.hasOwnProperty("description") || post.description.length >= 150 || typeof post.description !== "string" ||
+        !post.hasOwnProperty("createdAt") ||
+        !post.hasOwnProperty("author") || post.author.length >= 100 || typeof post.author !== "string" || post.author === "" ||
+        !post.hasOwnProperty("photoLink") || typeof post.photoLink !== "string" || post.photoLink === "" ||
         !post.hasOwnProperty("hashtags") ||
         !post.hasOwnProperty("likes"))
     {
-        console.log("Post with id " + post.id + " not valid.");
         return false;
     }
     else
     {
-        console.log("Post with id " + post.id + " valid.");
         return true;
     }
     }
@@ -114,12 +128,11 @@ class PostModel {
         if (this._validate(post))
         {
             this._photoPosts.push(post);
-            console.log("Post with id " + post.id + " added.");
+            this._savePosts();
             return true;
         }
         else
         {
-            console.log("Post with id " + post.id + " not added.");
             return false;
         }
     }
@@ -135,13 +148,12 @@ class PostModel {
         }
         if (index === -1)
         {
-            console.log("Post with id " + id + " doesn\'t exist.");
             return false;
         }
         else
         {
             this._photoPosts.splice(index, 1);
-            console.log("Post with id " + id + " deleted.");
+            this._savePosts();
             return true;
          }
     }
@@ -158,249 +170,55 @@ class PostModel {
         this.remove(post.id);
         if (this._validate(post)) {
             this.add(post);
-            console.log("Post changed.");
             return true;
         }
         else {
             this.add(tmpPost);
-            console.log("Post not changed.");
             return false;
+        }
+    }
+
+    isAuthorized() {
+        return this._authStatus;
+    }
+
+    toggleAuthStatus() {
+        this._authStatus = !this._authStatus;
+        this._saveAuthStatus();
+    }
+
+    _saveAuthStatus() {
+        const jsonAuthStatus = JSON.stringify(this._authStatus);
+        localStorage.setItem('authStatus', jsonAuthStatus);
+    }
+
+    _savePosts() {
+        localStorage.removeItem('posts');
+        const jsonPosts = JSON.stringify(this._photoPosts);
+        localStorage.setItem('posts', jsonPosts);
+    }
+
+    restoreFromLocalStorage() {
+        try {
+            const jsonPosts = localStorage.getItem('posts');
+            this._photoPosts = JSON.parse(jsonPosts);
+        } catch (e) {
+            this._photoPosts = null;
+        }
+        try {
+            const jsonAuthStatus = localStorage.getItem('authStatus');
+            this._authStatus = JSON.parse(jsonAuthStatus);
+        } catch (e) {
+            this._authStatus = null;
         }
     }
 
   }
 
-  const posts = [
-    {
-        id: "1",
-        description: "We like nature",
-        createdAt: new Date("2019-04-07T23:00:00"),
-        author: "Aleksander Ivanov",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "2",
-        description: "Good evening",
-        createdAt: new Date("2019-02-23T23:00:00"),
-        author: "Пётр Порошенко",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "3",
-        description: "Good morning 3",
-        createdAt: new Date("2018-02-20T23:00:00"),
-        author: "София",
-        photoLink: 'posts\3.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "4",
-        description: "Good morning 4",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "dog",
-        photoLink: 'posts\4.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes", "test"],
-    },
-    {
-        id: "5",
-        description: "Good morning 5",
-        createdAt: new Date("2018-02-21T23:00:00"),
-        author: "dog",
-        photoLink: 'posts\5.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "6",
-        description: "Good morning 6",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\6.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "7",
-        description: "Good morning 7",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\7.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "8",
-        description: "Good morning 8",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "dog",
-        photoLink: 'posts\8.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes", "test"],
-    },
-    {
-        id: "9",
-        description: "Good morning 9",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\9.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "10",
-        description: "Good morning 10",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "11",
-        description: "Good morning 11",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["swan", "likes"],
-    },
-    {
-        id: "12",
-        description: "Good morning 12",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["snow", "likes"],
-    },
-    {
-        id: "13",
-        description: "Good morning 13",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["nature", "likes"],
-    },
-    {
-        id: "14",
-        description: "Good morning 14",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "15",
-        description: "Good morning 15",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "16",
-        description: "Good morning 16",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "17",
-        description: "Good morning 17",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "18",
-        description: "Good morning 18",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "19",
-        description: "Good morning 19",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    },
-    {
-        id: "20",
-        description: "Good morning 20",
-        createdAt: new Date("2018-02-23T23:00:00"),
-        author: "София",
-        photoLink: 'posts\1.jpg',
-        likes: ["dog", "cat"],
-        hashtags: ["music", "likes"],
-    }
-];
+PostModel._DEFAULT_FILTER_CONFIG = {
+    dateFrom: '-271821-04-20T00:00:00.000Z',
+    dateTo: '+275760-09-13T00:00:00.000Z',
+    authorName: '',
+    hashtags: [],
+};
 
-  var two_posts = [{
-    id: "100",
-    description: "We like nature",
-    createdAt: new Date("2019-04-07T23:00:00"),
-    author: "Aleksander Ivanov",
-    photoLink: 'posts\1.jpg',
-    likes: ["dog", "cat"],
-    hashtags: ["nature", "likes"],
-},
-{
-    id: "101",
-    description: "Good evening",
-    createdAt: new Date("2019-02-23T23:00:00"),
-    author: "Пётр Порошенко",
-    photoLink: 'posts\1.jpg',
-    likes: ["dog", "cat"],
-    hashtags: ["nature", "likes"],
-},]
-
-var post = {
-    id: "21",
-    description: "Hi",
-    createdAt: new Date("2019-04-07T23:00:00"),
-    author: "Sasha",
-    photoLink: "link",
-    hashtags: ["ser", "rar"],
-    likes: ["vac"],
-    }
-
-function test() {
-    const Class_posts = new PostModel(posts);
-    Class_posts.get("5");
-    Class_posts.get("21"); 
-    Class_posts._validate(post);
-    Class_posts.add(post);
-    Class_posts.remove("21");
-    Class_posts.get("1");
-
-    Class_posts.edit("1", {description: "changed"});
-    Class_posts.get("1");
-
-    Class_posts.getPage(0,20);
-    Class_posts.getPage(5,5);
-    Class_posts.getPage(0,10, {authorName: "Пётр Порошенко"});
-    Class_posts.getPage(0,10, {hashtags: ["nature"]});
-
-    Class_posts.addAll(two_posts);
-}
-
-test();
-//Я получил одинаковый вывод на консоль и при использовании просто функций, и при использовании класса.

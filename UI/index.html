@@ -8,8 +8,6 @@
         <meta name="description" lang="en" content="photo portal">
         <meta name="keywords" lang="en" content="photos, hashtag, like">
         <link rel="stylesheet" href="style.css" type="text/css">
-        <!-- <script src="script.js"></script> -->
-        <script src="PostModel.js"></script>
     </head>
 
     <body>
@@ -17,14 +15,16 @@
             <div class="container">
                  <div class="logo">
                     <img src="posts\logo.png" id="photo_logo"><br>
-                    <span>S</span>
-                    <span>H</span>
-                    <span>A</span>
-                    <span>I</span>
-                    <span>V</span>
-                    <span>A</span>
-                    
-                    <p>Hello, Sasha <a href="#"><button class="green-button">Sign out</button></a></p>
+                    <span class="letter">S</span>
+                    <span class="letter">H</span>
+                    <span class="letter">A</span>
+                    <span class="letter">I</span>
+                    <span class="letter">V</span>
+                    <span class="letter">A</span>
+                   <div class="right"> 
+                    <span class="logInfo">Hello, guest</span>
+                     <button class="green-button signIn-button">Sign In</button>
+                     </div>
                     
                 </div>
             </div>
@@ -33,179 +33,71 @@
         <main>
             <div class="container">
                 <div class="posts">
-                    <article>
-                        <p class="left">Aleksander Ivanov</p>
-                        <p class="right">today, 21:00</p>
-                        <img src="posts\1.jpg"><br>
-                        <p class="left">Are you ok?  #nature</p>
-                                <div class="dropdown" style="float:right;">
-                                        <button class="dropbtn">&#9776;  &#160;  </button>
-                                        <div class="dropdown-content">
-                                          <a href="#">edit</a>
-                                          <a href="#">remove</a>
-                                        </div>
-                                      </div>
-                        <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
+                    <template class="post-template">
+                        <article class="post-container" data-id="id">
+                            <p class="name left">Aleksander Ivanov</p>
+                            <p class="date right">today, 21:00</p>
+                            <img class="photo" src="posts\1.jpg"><br>
+                            <p class="descr left">Are you ok?  #nature</p>
+                                    <div class="dropdown" style="float:right; display: none;">
+                                            <button class="dropbtn">&#9776;  &#160;  </button>
+                                            <div class="dropdown-content">
+                                              <button class="edit-button green-button">edit</button>
+                                              <button class="remove-button green-button">remove</button>
+                                            </div>
+                                          </div>
+                            <a href="#" class="right like" style="text-decoration: none;">&#10084;  &#160; </a>
                         </article>
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\2.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <nave class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <nave class="dropdown-content">
-                                            <a href="#">edit</a>
-                                            <a href="#">remove</a>
-                                            </nave>
-                                        </nave>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>     
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\3.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article> 
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\4.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>     
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\5.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\6.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\7.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\8.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-                    <article>
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\9.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-
-                    <article style="margin-bottom: 30px">
-                            <p class="left">Aleksander Ivanov</p>
-                            <p class="right">today, 21:00</p>
-                            <img src="posts\10.jpg"><br>
-                            <p class="left">Are you ok?  #nature</p>
-                                    <div class="dropdown" style="float:right;">
-                                            <button class="dropbtn">&#9776;  &#160;  </button>
-                                            <div class="dropdown-content">
-                                                <a href="#">edit</a>
-                                                <a href="#">remove</a>
-                                            </div>
-                                            </div>
-                            <a href="#" class="right" style="text-decoration: none;">&#10084;  &#160; </a>
-                            </article>
-                        <br>
-                        <a href="#"><button class="green-button" style="  display: block;
-                            text-align: center; margin-bottom: 20px; ">more</button></a>   
+                    </template>
+                    <br>
+                    <button class="green-button more-button" style="  display: block;
+                            text-align: center; margin-bottom: 20px; ">more</button>
                 </div>
                 
                 <aside >
-                         <a href="#"><button class="green-button" style="display: block; text-align: center;
-                          margin-bottom: 20px; border-radius: 20%; width:100%" >Add post</button></a>
+                    <button class="green-button add-post-button" style="display: block; text-align: center;
+                          margin-bottom: 20px; border-radius: 20%; width:100%" >Add post</button>
 
                           <div class="filters" style="padding-bottom:40%; border-radius: 5% ; border: 1px solid gray;">
                               <h2 style="text-align: center">filters</h2>
-                              <form action="" class="searchform">
-                                    <input type="text" placeholder="name...">
-                                    <a href=#><button> &#128269;</button></a>
-                                </form>
-                            <form action="" class="searchform">
-                                    <input type="text" placeholder="date...">
-                                    <a href=#><button> &#128269;</button></a>
-                                </form>
-                            <form action="" class="searchform">
-                                    <input type="text" placeholder="hashtag...">
-                                    <a href=#><button> &#128269;</button></a>
-                                </form>
-                              </div>
+                              <form class="searchform filterForm">
+                                    <input type="text" class="nameFilter" placeholder="name...">
+
+                                    <input type="date" class="dateFromFilter">
+                                    <input type="date" class="dateToFilter">
+
+                                    <input type="text" class="hashtagFilter" placeholder="hashtag...">
+                                    <button type="submit"> &#128269;</button>
+                              </form>
+                          </div>
                 </aside>
             </div>
         </main>
-
+        <div class="add-post-container hidden">
+                <form class="add-post-form" method="post" enctype=multipart/form-data>
+                    <p class="add-post-title">Fill the form</p>
+                    <label class="author-label width100">Author name:</label>
+                    <input class="author-input width100 disabled" id="addEdit-author" value="username" type="text" disabled />
+                    <label class="date-label width100" for="dateAndTime">Date and time:</label>
+                    <input class="date-input width100 disabled" id="dateAndTime" type="text" disabled />
+                    <label for="addEdit-tags" class="hashtags-label width100">Hashtags:</label>
+                    <input class="hashtags-input width100" type="text" placeholder="Enter hashtags by spaces" id="addEdit-tags" />
+                    <label for="desc" class="desc-label width100">Short description:</label>
+                    <textarea class="desc-input input width100" id="desc" placeholder="Description"
+                              maxlength="200" required></textarea>
+                    <label for="uploadBtn" class="upload-button green-button width100">Upload file</label>
+                    <input style="opacity: 0; z-index: -1; height: 0" type="file" name="upload" id="uploadBtn" />
+                    <button type="submit" class="add-button green-button button width100">Add post</button>
+                </form>
+        </div>
         <footer>
             <div class="container">
                     <p style="font-size: 20px; text-align: center; word-spacing: 20px">Aleksander Ivanov    2курс 7группа    cffif456@yandex.ru    25.02.2019</p>
             </div>
         </footer>
+        <script src="PostModel.js"></script>
+        <script src="PostView.js"></script>
+        <script src="PostController.js"></script>
+        <script src="script.js"></script>
     </body>
 </html>

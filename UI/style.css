@@ -16,11 +16,11 @@ header{
     max-width: 960px;
     padding: 0 15px;
     padding-top: 5px;
-    
+
   }
 
 
- .logo  span {
+ .logo  .letter {
     color: blue;
     display: inline-block;
     width: 30px;
@@ -175,4 +175,40 @@ footer{
     cursor: pointer;
     font-size: 18px;
     border-width: 1px;
+}
+
+.edit-button, .remove-button {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+.add-post-container {
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+.width100 {
+    width: 100%;
+}
+
+.disabled {
+    background-color: #E0FFFF;
+    font-size: 18px;
+    color: blue;
+    border: none;
+}
+
+.upload-button {
+    display: inline-block;
+    text-align: center;
+}
+.add-post-form > * {
+    margin: 5px 0 5px 0;
+}
+
+.like-active {
+    color: greenyellow;
 }
